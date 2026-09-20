@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#F0EFE9" />
   <meta name="color-scheme" content="light dark" />
-  <title>PERSONAL OS — Daily Brief V1.9</title>
-  <meta name="description" content="Démo publique fictive PERSONAL OS V1.9 — test iPhone de l’interface et du pull-to-refresh." />
+  <title>PERSONAL OS — Daily Brief V1.10</title>
+  <meta name="description" content="Démo publique fictive PERSONAL OS V1.10 — test iPhone de l’interface." />
   <style>:root{
   color-scheme:light dark;
   --bg:#F0EFE9;
@@ -305,7 +305,7 @@ body.is-pulling .app-shell{
   opacity:.76;
   transform-origin:center;
 }
-body.is-refreshing .refresh-glyph{
+body.is-refreshing.refresh-from-button .refresh-glyph{
   animation:refresh-spin 950ms linear infinite;
 }
 .pull-refresh{
@@ -326,7 +326,7 @@ body.is-refreshing .refresh-glyph{
   transition:opacity 120ms ease,transform 120ms ease;
 }
 body.is-pulling .pull-refresh,
-body.is-refreshing .pull-refresh{
+body.is-refreshing.refresh-from-pull .pull-refresh{
   opacity:var(--pull-progress,.55);
   transform:translate(-50%,0);
 }
@@ -336,7 +336,7 @@ body.is-refreshing .pull-refresh{
   line-height:1;
   transform:rotate(var(--pull-rotation,0deg));
 }
-body.is-refreshing .pull-refresh-glyph{
+body.is-refreshing.refresh-from-pull .pull-refresh-glyph{
   animation:refresh-spin 950ms linear infinite;
 }
 .pull-refresh-label{
@@ -350,9 +350,251 @@ body.is-refreshing .pull-refresh-glyph{
   .pull-refresh{
     transition:none;
   }
-  body.is-refreshing .refresh-glyph,
-  body.is-refreshing .pull-refresh-glyph{
+  body.is-refreshing.refresh-from-button .refresh-glyph,
+  body.is-refreshing.refresh-from-pull .pull-refresh-glyph{
     animation:none;
+  }
+}
+
+
+/* V1.10 — Progressive Task Detail */
+.task-card{
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  transition:transform 120ms ease,border-color 120ms ease,filter 120ms ease;
+}
+.task-card:active{
+  transform:scale(.994);
+  filter:brightness(.98);
+}
+.task-card:focus-visible{
+  outline:1px solid var(--line);
+  outline-offset:3px;
+}
+.task-meta-row{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:14px;
+}
+.task-meta-row .status{
+  margin-top:0;
+}
+.task-affordance{
+  margin-left:auto;
+  color:var(--muted);
+  font:8px var(--mono);
+  letter-spacing:.075em;
+  text-transform:uppercase;
+  opacity:.72;
+}
+.work.strong .task-affordance,
+.focus .task-affordance{
+  color:#BDBAB4;
+}
+.task-sheet-layer{
+  position:fixed;
+  z-index:100;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  visibility:hidden;
+  pointer-events:none;
+}
+.task-sheet-layer.is-open{
+  visibility:visible;
+  pointer-events:auto;
+}
+.task-sheet-backdrop{
+  appearance:none;
+  -webkit-appearance:none;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  padding:0;
+  background:rgba(0,0,0,.46);
+  opacity:0;
+  transition:opacity 220ms ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.task-sheet-layer.is-open .task-sheet-backdrop{
+  opacity:var(--sheet-backdrop-opacity,1);
+}
+.task-sheet{
+  --sheet-accent:var(--orange);
+  position:relative;
+  width:min(680px,100%);
+  max-height:min(84dvh,760px);
+  background:var(--surface);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-bottom:0;
+  border-radius:24px 24px 0 0;
+  box-shadow:0 -20px 60px rgba(0,0,0,.22);
+  transform:translateY(104%);
+  transition:transform 280ms cubic-bezier(.22,.75,.22,1);
+  overflow:hidden;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.task-sheet[data-tone="work"]{--sheet-accent:var(--work-red)}
+.task-sheet[data-tone="focus"]{--sheet-accent:var(--orange)}
+.task-sheet-layer.is-open .task-sheet{
+  transform:translateY(var(--sheet-drag,0px));
+}
+.task-sheet-layer.is-dragging .task-sheet{
+  transition:none;
+}
+.task-sheet-handle-zone{
+  display:flex;
+  justify-content:center;
+  padding:10px 0 6px;
+}
+.task-sheet-handle{
+  width:34px;
+  height:4px;
+  border-radius:999px;
+  background:var(--line);
+}
+.task-sheet-topline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:4px 20px 12px;
+  border-bottom:1px solid var(--line-soft);
+}
+.task-sheet-kicker,
+.task-sheet-close,
+.task-detail-label{
+  font-family:var(--mono);
+  text-transform:uppercase;
+  letter-spacing:.075em;
+}
+.task-sheet-kicker{
+  color:var(--sheet-accent);
+  font-size:9px;
+  font-weight:700;
+}
+.task-sheet-close{
+  appearance:none;
+  -webkit-appearance:none;
+  min-height:44px;
+  margin:-10px -8px -10px 0;
+  padding:10px 8px;
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:8px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.task-sheet-scroll{
+  max-height:calc(min(84dvh,760px) - 72px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:22px 20px calc(28px + env(safe-area-inset-bottom));
+}
+.task-sheet h2{
+  margin:0;
+  max-width:14ch;
+  font-family:var(--serif);
+  font-size:clamp(32px,9vw,48px);
+  font-weight:500;
+  line-height:1;
+  letter-spacing:-.035em;
+}
+.task-sheet-summary{
+  margin:12px 0 0;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.48;
+}
+.task-detail-section{
+  margin-top:22px;
+  padding-top:16px;
+  border-top:1px solid var(--line-soft);
+}
+.task-detail-section[hidden]{
+  display:none;
+}
+.task-detail-label{
+  margin:0 0 10px;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:700;
+}
+.task-detail-copy,
+.task-detail-done{
+  margin:0;
+  font-size:15px;
+  line-height:1.5;
+}
+.task-step-list,
+.task-subtask-list,
+.task-dependency-list{
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+.task-step-list{
+  counter-reset:taskstep;
+}
+.task-step-list li{
+  counter-increment:taskstep;
+  display:grid;
+  grid-template-columns:30px 1fr;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid var(--line-soft);
+  font-size:15px;
+  line-height:1.4;
+}
+.task-step-list li:before{
+  content:counter(taskstep,decimal-leading-zero);
+  color:var(--sheet-accent);
+  font:9px var(--mono);
+  letter-spacing:.05em;
+  padding-top:4px;
+}
+.task-subtask-list li,
+.task-dependency-list li{
+  position:relative;
+  padding:8px 0 8px 18px;
+  font-size:14px;
+  line-height:1.42;
+}
+.task-subtask-list li:before,
+.task-dependency-list li:before{
+  content:"—";
+  position:absolute;
+  left:0;
+  color:var(--muted);
+}
+.task-done-section{
+  border-top-color:var(--sheet-accent);
+}
+.task-detail-done{
+  font-family:var(--serif);
+  font-size:22px;
+  line-height:1.2;
+  letter-spacing:-.02em;
+}
+body.task-sheet-open{
+  position:fixed;
+  width:100%;
+  overflow:hidden;
+}
+@media(prefers-reduced-motion:reduce){
+  .task-card,
+  .task-sheet,
+  .task-sheet-backdrop{
+    transition:none;
   }
 }
 </style>
@@ -411,13 +653,16 @@ body.is-refreshing .pull-refresh-glyph{
       </div>
     </section>
 
-    <section class="brief-block work strong">
+    <section class="brief-block work strong task-card" data-task-detail="top-demo" data-task-tone="work" role="button" tabindex="0" aria-label="Ouvrir le détail de la priorité du jour">
       <div class="block-index">02</div>
       <div class="block-body">
         <p class="eyebrow">TOP DU JOUR</p>
         <h2>Un résultat fictif à traiter.</h2>
         <p class="summary">Exemple de priorité servant uniquement à tester la hiérarchie.</p>
-        <span class="status">— ENTRETIEN</span>
+        <div class="task-meta-row">
+          <span class="status">→ À FAIRE</span>
+          <span class="task-affordance">DÉTAIL</span>
+        </div>
       </div>
     </section>
 
@@ -430,13 +675,16 @@ body.is-refreshing .pull-refresh-glyph{
       </div>
     </section>
 
-    <section class="brief-block work">
+    <section class="brief-block work task-card" data-task-detail="email-demo" data-task-tone="work" role="button" tabindex="0" aria-label="Ouvrir le détail du message à traiter">
       <div class="block-index">04</div>
       <div class="block-body">
         <p class="eyebrow">EMAILS À TRAITER</p>
         <h3>Un message fictif à traiter.</h3>
         <p class="summary">Contenu de démonstration sans donnée réelle.</p>
-        <span class="status">→ À FAIRE DEMAIN</span>
+        <div class="task-meta-row">
+          <span class="status">→ À FAIRE DEMAIN</span>
+          <span class="task-affordance">DÉTAIL</span>
+        </div>
       </div>
     </section>
 
@@ -486,7 +734,10 @@ body.is-refreshing .pull-refresh-glyph{
         <p class="eyebrow">PERSO / SANTÉ</p>
         <h3>Routine fictive.</h3>
         <p class="summary">Exemple de contenu personnel anonymisé pour tester la mise en page.</p>
-        <span class="status">— ENTRETIEN</span>
+        <div class="task-meta-row">
+          <span class="status">→ À FAIRE</span>
+          <span class="task-affordance">DÉTAIL</span>
+        </div>
       </div>
     </section>
 
@@ -523,20 +774,71 @@ body.is-refreshing .pull-refresh-glyph{
       </div>
     </section>
 
-    <section class="brief-block focus">
+    <section class="brief-block focus task-card" data-task-detail="focus-demo" data-task-tone="focus" role="button" tabindex="0" aria-label="Ouvrir le détail de la prochaine action">
       <div class="block-index">10</div>
       <div class="block-body">
         <p class="eyebrow">FOCUS ACTUEL</p>
         <h2>Prochaine action — exemple.</h2>
         <p class="summary">Cette page utilise exclusivement des données fictives.</p>
+        <div class="task-meta-row">
+          <span class="task-affordance">DÉTAIL</span>
+        </div>
       </div>
     </section>
 
     <footer>
-      <span>PERSONAL OS / V1.9</span>
+      <span>PERSONAL OS / V1.10</span>
       <span>LESS UI / MORE SIGNAL</span>
     </footer>
   </main>
+
+  <div class="task-sheet-layer" aria-hidden="true">
+    <button class="task-sheet-backdrop" type="button" tabindex="-1" aria-label="Fermer le détail"></button>
+    <section class="task-sheet" role="dialog" aria-modal="true" aria-labelledby="task-sheet-title">
+      <div class="task-sheet-handle-zone" aria-hidden="true">
+        <span class="task-sheet-handle"></span>
+      </div>
+      <div class="task-sheet-topline">
+        <span class="task-sheet-kicker" id="task-sheet-context"></span>
+        <button class="task-sheet-close" type="button">FERMER</button>
+      </div>
+      <div class="task-sheet-scroll">
+        <h2 id="task-sheet-title"></h2>
+        <p class="task-sheet-summary" id="task-sheet-summary"></p>
+
+        <div class="task-detail-section" data-detail-section="objective">
+          <p class="task-detail-label">OBJECTIF</p>
+          <p class="task-detail-copy" id="task-detail-objective"></p>
+        </div>
+
+        <div class="task-detail-section" data-detail-section="why">
+          <p class="task-detail-label">POURQUOI MAINTENANT</p>
+          <p class="task-detail-copy" id="task-detail-why"></p>
+        </div>
+
+        <div class="task-detail-section" data-detail-section="steps">
+          <p class="task-detail-label">PLAN D’ACTION</p>
+          <ol class="task-step-list" id="task-detail-steps"></ol>
+        </div>
+
+        <div class="task-detail-section" data-detail-section="subtasks">
+          <p class="task-detail-label">SOUS-TÂCHES</p>
+          <ul class="task-subtask-list" id="task-detail-subtasks"></ul>
+        </div>
+
+        <div class="task-detail-section" data-detail-section="dependencies">
+          <p class="task-detail-label">DÉPENDANCES</p>
+          <ul class="task-dependency-list" id="task-detail-dependencies"></ul>
+        </div>
+
+        <div class="task-detail-section task-done-section" data-detail-section="done">
+          <p class="task-detail-label">TERMINÉ QUAND…</p>
+          <p class="task-detail-done" id="task-detail-done"></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <script>(() => {
   const themeMeta = document.querySelector('meta[name="theme-color"]');
   const darkMedia = window.matchMedia("(prefers-color-scheme: dark)");
@@ -544,7 +846,84 @@ body.is-refreshing .pull-refresh-glyph{
   const refreshControl = document.querySelector(".refresh-control");
   const refreshStatus = document.querySelector(".refresh-status");
   const pullLabel = document.querySelector(".pull-refresh-label");
+
+  const taskCards = [...document.querySelectorAll("[data-task-detail]")];
+  const sheetLayer = document.querySelector(".task-sheet-layer");
+  const sheet = document.querySelector(".task-sheet");
+  const sheetBackdrop = document.querySelector(".task-sheet-backdrop");
+  const sheetClose = document.querySelector(".task-sheet-close");
+  const sheetScroll = document.querySelector(".task-sheet-scroll");
+
+  const taskDetails = {
+    "top-demo":{
+      context:"À FAIRE · AUJOURD’HUI",
+      title:"Un résultat fictif à traiter.",
+      summary:"Transformer une priorité générale en un résultat concret, sans multiplier les microtâches dans le Daily Brief.",
+      objective:"Produire un livrable simple et vérifiable qui ferme réellement la boucle.",
+      whyToday:"Cette priorité est volontairement placée dans le Top du jour pour tester la profondeur progressive de PERSONAL OS.",
+      steps:[
+        "Clarifier le résultat final attendu avant de commencer.",
+        "Rassembler uniquement les informations nécessaires à l’exécution.",
+        "Réaliser le bloc principal sans ouvrir de nouveau chantier.",
+        "Vérifier le résultat puis fermer la boucle."
+      ],
+      subtasks:[
+        "Identifier le prochain geste concret.",
+        "Écarter les éléments qui peuvent attendre.",
+        "Faire une vérification finale de 5 minutes."
+      ],
+      dependencies:[],
+      doneWhen:"Le résultat attendu existe, a été vérifié et ne nécessite plus d’action aujourd’hui."
+    },
+    "email-demo":{
+      context:"À FAIRE · DEMAIN",
+      title:"Un message fictif à traiter.",
+      summary:"Préparer une réponse courte qui permet au destinataire de comprendre immédiatement la décision ou la prochaine étape.",
+      objective:"Répondre au message sans créer une nouvelle boucle inutile.",
+      whyToday:"Le message est visible maintenant uniquement pour préparer demain, pas pour créer une urgence artificielle.",
+      steps:[
+        "Relire la demande et isoler la décision attendue.",
+        "Vérifier les éléments indispensables avant de répondre.",
+        "Rédiger une réponse courte avec une prochaine étape explicite.",
+        "Relire une fois puis envoyer au moment prévu."
+      ],
+      subtasks:[
+        "Confirmer qu’aucune pièce utile ne manque.",
+        "Supprimer les détails qui n’aident pas la décision."
+      ],
+      dependencies:["Une information fictive doit être confirmée avant l’envoi."],
+      doneWhen:"La réponse est prête, claire et peut être envoyée sans nouvelle recherche."
+    },
+    "focus-demo":{
+      context:"FOCUS ACTUEL",
+      title:"Prochaine action — exemple.",
+      summary:"La fiche détaille uniquement ce qui aide à démarrer, sans transformer PERSONAL OS en gestionnaire de projet.",
+      objective:"Passer du choix de priorité au premier geste exécutable.",
+      whyToday:"FOCUS ACTUEL doit réduire la friction de démarrage et non ajouter une nouvelle liste.",
+      steps:[
+        "Commencer par l’étape qui débloque le reste.",
+        "Rester sur ce sujet jusqu’à obtenir un progrès visible.",
+        "Revenir au cockpit uniquement lorsqu’une décision est nécessaire."
+      ],
+      subtasks:[],
+      dependencies:[],
+      doneWhen:"La prochaine action est terminée ou une nouvelle décision devient nécessaire."
+    }
+  };
+
   let lastStableStatus = refreshStatus?.textContent || "";
+  let refreshing = false;
+  let touchStartY = 0;
+  let pulling = false;
+  let pullDistance = 0;
+  let lockedScrollY = 0;
+  let lastTaskTrigger = null;
+  let sheetDragStartY = 0;
+  let sheetDragDistance = 0;
+  let sheetDragging = false;
+
+  const triggerDistance = 56;
+  const maxDistance = 74;
 
   const syncThemeColor = () => {
     themeMeta?.setAttribute("content", darkMedia.matches ? "#0B0C0D" : "#F0EFE9");
@@ -566,13 +945,6 @@ body.is-refreshing .pull-refresh-glyph{
     });
   }, {rootMargin:"-18% 0px -62% 0px",threshold:[0,.2,.5,1]});
   sections.forEach(section => observer.observe(section));
-
-  let refreshing = false;
-  let touchStartY = 0;
-  let pulling = false;
-  let pullDistance = 0;
-  const triggerDistance = 56;
-  const maxDistance = 74;
 
   const formatTime = () => new Intl.DateTimeFormat("fr-FR", {
     hour:"2-digit",
@@ -601,29 +973,45 @@ body.is-refreshing .pull-refresh-glyph{
     if (pullLabel) pullLabel.textContent = "TIRER POUR ACTUALISER";
   };
 
+  const clearRefreshOrigin = () => {
+    document.body.classList.remove("refresh-from-pull","refresh-from-button");
+  };
+
   const finishRefresh = () => {
     lastStableStatus = "Mis à jour à " + formatTime();
-    refreshStatus && (refreshStatus.textContent = lastStableStatus);
+    if (refreshStatus) refreshStatus.textContent = lastStableStatus;
     refreshing = false;
     document.body.classList.remove("is-refreshing");
+    clearRefreshOrigin();
     resetPull();
   };
 
   const failRefresh = () => {
-    refreshStatus && (refreshStatus.textContent = lastStableStatus);
+    if (refreshStatus) refreshStatus.textContent = lastStableStatus;
     refreshing = false;
     document.body.classList.remove("is-refreshing");
+    clearRefreshOrigin();
     resetPull();
   };
 
   const requestRefresh = async (source = "button") => {
-    if (refreshing) return;
+    if (refreshing || document.body.classList.contains("task-sheet-open")) return;
+
     refreshing = true;
     document.body.classList.add("is-refreshing");
-    refreshStatus && (refreshStatus.textContent = "Actualisation…");
-    if (pullLabel) pullLabel.textContent = "ACTUALISATION…";
-    document.body.style.setProperty("--pull-distance", "24px");
-    document.body.style.setProperty("--pull-progress", ".72");
+
+    const fromPull = source === "pull";
+    document.body.classList.add(fromPull ? "refresh-from-pull" : "refresh-from-button");
+
+    if (fromPull) {
+      if (refreshStatus) refreshStatus.textContent = lastStableStatus;
+      if (pullLabel) pullLabel.textContent = "ACTUALISATION…";
+      document.body.style.setProperty("--pull-distance", "24px");
+      document.body.style.setProperty("--pull-progress", ".72");
+    } else {
+      if (refreshStatus) refreshStatus.textContent = "Actualisation…";
+      document.body.style.setProperty("--pull-distance", "0px");
+    }
 
     let externallyHandled = false;
     let settled = false;
@@ -650,7 +1038,6 @@ body.is-refreshing .pull-refresh-glyph{
         await window.PERSONAL_OS_REFRESH_HANDLER({source});
         complete();
       } else if (!externallyHandled) {
-        // Prototype fallback only: no connector, API, token or network request is made here.
         await new Promise(resolve => setTimeout(resolve, 700));
         complete();
       }
@@ -662,7 +1049,12 @@ body.is-refreshing .pull-refresh-glyph{
   refreshControl?.addEventListener("click", () => requestRefresh("button"));
 
   window.addEventListener("touchstart", (event) => {
-    if (refreshing || window.scrollY > 0 || event.touches.length !== 1) return;
+    if (
+      refreshing ||
+      document.body.classList.contains("task-sheet-open") ||
+      window.scrollY > 0 ||
+      event.touches.length !== 1
+    ) return;
     touchStartY = event.touches[0].clientY;
     pulling = true;
   }, {passive:true});
@@ -687,6 +1079,143 @@ body.is-refreshing .pull-refresh-glyph{
   }, {passive:true});
 
   window.addEventListener("touchcancel", resetPull, {passive:true});
+
+  const setText = (selector,value) => {
+    const node = document.querySelector(selector);
+    if (node) node.textContent = value || "";
+  };
+
+  const renderList = (selector,items) => {
+    const list = document.querySelector(selector);
+    if (!list) return;
+    list.replaceChildren();
+    (items || []).forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      list.appendChild(li);
+    });
+  };
+
+  const toggleDetailSection = (name,visible) => {
+    const section = document.querySelector('[data-detail-section="' + name + '"]');
+    if (section) section.hidden = !visible;
+  };
+
+  const openTaskDetail = (card) => {
+    const detail = taskDetails[card.dataset.taskDetail];
+    if (!detail || !sheetLayer || !sheet) return;
+
+    lastTaskTrigger = card;
+
+    setText("#task-sheet-context",detail.context);
+    setText("#task-sheet-title",detail.title);
+    setText("#task-sheet-summary",detail.summary);
+    setText("#task-detail-objective",detail.objective);
+    setText("#task-detail-why",detail.whyToday);
+    setText("#task-detail-done",detail.doneWhen);
+
+    renderList("#task-detail-steps",detail.steps);
+    renderList("#task-detail-subtasks",detail.subtasks);
+    renderList("#task-detail-dependencies",detail.dependencies);
+
+    toggleDetailSection("objective",Boolean(detail.objective));
+    toggleDetailSection("why",Boolean(detail.whyToday));
+    toggleDetailSection("steps",Boolean(detail.steps?.length));
+    toggleDetailSection("subtasks",Boolean(detail.subtasks?.length));
+    toggleDetailSection("dependencies",Boolean(detail.dependencies?.length));
+    toggleDetailSection("done",Boolean(detail.doneWhen));
+
+    sheet.dataset.tone = card.dataset.taskTone || "work";
+    if (sheetScroll) sheetScroll.scrollTop = 0;
+
+    lockedScrollY = window.scrollY;
+    document.body.style.top = "-" + lockedScrollY + "px";
+    document.body.classList.add("task-sheet-open");
+
+    sheetLayer.classList.add("is-open");
+    sheetLayer.setAttribute("aria-hidden","false");
+
+    requestAnimationFrame(() => sheetClose?.focus({preventScroll:true}));
+  };
+
+  const resetSheetDrag = () => {
+    sheetDragDistance = 0;
+    sheetDragging = false;
+    sheetLayer?.classList.remove("is-dragging");
+    document.documentElement.style.removeProperty("--sheet-drag");
+    document.documentElement.style.removeProperty("--sheet-backdrop-opacity");
+  };
+
+  const closeTaskDetail = () => {
+    if (!sheetLayer?.classList.contains("is-open")) return;
+
+    sheetLayer.classList.remove("is-open");
+    sheetLayer.setAttribute("aria-hidden","true");
+    resetSheetDrag();
+
+    window.setTimeout(() => {
+      document.body.classList.remove("task-sheet-open");
+      document.body.style.removeProperty("top");
+      window.scrollTo(0,lockedScrollY);
+      lastTaskTrigger?.focus({preventScroll:true});
+    },180);
+  };
+
+  taskCards.forEach(card => {
+    card.addEventListener("click",() => openTaskDetail(card));
+    card.addEventListener("keydown",(event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openTaskDetail(card);
+      }
+    });
+  });
+
+  sheetClose?.addEventListener("click",closeTaskDetail);
+  sheetBackdrop?.addEventListener("click",closeTaskDetail);
+
+  window.addEventListener("keydown",(event) => {
+    if (event.key === "Escape") closeTaskDetail();
+  });
+
+  sheet?.addEventListener("touchstart",(event) => {
+    if (
+      !sheetLayer?.classList.contains("is-open") ||
+      event.touches.length !== 1 ||
+      (sheetScroll && sheetScroll.scrollTop > 0)
+    ) return;
+    sheetDragStartY = event.touches[0].clientY;
+    sheetDragging = true;
+  },{passive:true});
+
+  sheet?.addEventListener("touchmove",(event) => {
+    if (!sheetDragging || event.touches.length !== 1) return;
+
+    const delta = event.touches[0].clientY - sheetDragStartY;
+    if (delta <= 0) {
+      resetSheetDrag();
+      return;
+    }
+
+    event.preventDefault();
+    sheetLayer?.classList.add("is-dragging");
+    sheetDragDistance = Math.min(220,delta);
+
+    document.documentElement.style.setProperty("--sheet-drag",sheetDragDistance + "px");
+    document.documentElement.style.setProperty(
+      "--sheet-backdrop-opacity",
+      String(Math.max(.35,1 - sheetDragDistance / 280))
+    );
+  },{passive:false});
+
+  sheet?.addEventListener("touchend",() => {
+    if (!sheetDragging) return;
+    const shouldClose = sheetDragDistance >= 88;
+    resetSheetDrag();
+    if (shouldClose) closeTaskDetail();
+  },{passive:true});
+
+  sheet?.addEventListener("touchcancel",resetSheetDrag,{passive:true});
 })();</script>
 </body>
 </html>
