@@ -530,14 +530,19 @@ body.is-refreshing.refresh-from-pull .pull-refresh-glyph{
   font-weight:700;
 }
 .task-detail-copy,
+.task-detail-next,
 .task-detail-done{
   margin:0;
   font-size:15px;
   line-height:1.5;
 }
-.task-step-list,
-.task-subtask-list,
-.task-dependency-list{
+.task-detail-next{
+  font-family:var(--serif);
+  font-size:22px;
+  line-height:1.22;
+  letter-spacing:-.02em;
+}
+.task-step-list{
   margin:0;
   padding:0;
   list-style:none;
@@ -562,20 +567,7 @@ body.is-refreshing.refresh-from-pull .pull-refresh-glyph{
   letter-spacing:.05em;
   padding-top:4px;
 }
-.task-subtask-list li,
-.task-dependency-list li{
-  position:relative;
-  padding:8px 0 8px 18px;
-  font-size:14px;
-  line-height:1.42;
-}
-.task-subtask-list li:before,
-.task-dependency-list li:before{
-  content:"—";
-  position:absolute;
-  left:0;
-  color:var(--muted);
-}
+.task-next-section,
 .task-done-section{
   border-top-color:var(--sheet-accent);
 }
