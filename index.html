@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#F0EFE9" />
   <meta name="color-scheme" content="light dark" />
-  <title>PERSONAL OS — Daily Brief V1.10</title>
-  <meta name="description" content="Démo publique fictive PERSONAL OS V1.10 — test iPhone de l’interface." />
+  <title>PERSONAL OS — Daily Brief V1.10.1</title>
+  <meta name="description" content="Démo publique fictive PERSONAL OS V1.10.1 — test iPhone de l’interface." />
   <style>:root{
   color-scheme:light dark;
   --bg:#F0EFE9;
@@ -357,7 +357,7 @@ body.is-refreshing.refresh-from-pull .pull-refresh-glyph{
 }
 
 
-/* V1.10 — Progressive Task Detail */
+/* V1.10.1 — Progressive Task Detail */
 .task-card{
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
@@ -734,10 +734,7 @@ body.task-sheet-open{
         <p class="eyebrow">PERSO / SANTÉ</p>
         <h3>Routine fictive.</h3>
         <p class="summary">Exemple de contenu personnel anonymisé pour tester la mise en page.</p>
-        <div class="task-meta-row">
-          <span class="status">→ À FAIRE</span>
-          <span class="task-affordance">DÉTAIL</span>
-        </div>
+        <span class="status">— ENTRETIEN</span>
       </div>
     </section>
 
@@ -774,20 +771,17 @@ body.task-sheet-open{
       </div>
     </section>
 
-    <section class="brief-block focus task-card" data-task-detail="focus-demo" data-task-tone="focus" role="button" tabindex="0" aria-label="Ouvrir le détail de la prochaine action">
+    <section class="brief-block focus">
       <div class="block-index">10</div>
       <div class="block-body">
         <p class="eyebrow">FOCUS ACTUEL</p>
         <h2>Prochaine action — exemple.</h2>
         <p class="summary">Cette page utilise exclusivement des données fictives.</p>
-        <div class="task-meta-row">
-          <span class="task-affordance">DÉTAIL</span>
-        </div>
       </div>
     </section>
 
     <footer>
-      <span>PERSONAL OS / V1.10</span>
+      <span>PERSONAL OS / V1.10.1</span>
       <span>LESS UI / MORE SIGNAL</span>
     </footer>
   </main>
@@ -806,29 +800,19 @@ body.task-sheet-open{
         <h2 id="task-sheet-title"></h2>
         <p class="task-sheet-summary" id="task-sheet-summary"></p>
 
-        <div class="task-detail-section" data-detail-section="objective">
-          <p class="task-detail-label">OBJECTIF</p>
-          <p class="task-detail-copy" id="task-detail-objective"></p>
-        </div>
-
-        <div class="task-detail-section" data-detail-section="why">
-          <p class="task-detail-label">POURQUOI MAINTENANT</p>
-          <p class="task-detail-copy" id="task-detail-why"></p>
+        <div class="task-detail-section task-next-section" data-detail-section="next">
+          <p class="task-detail-label">PROCHAINE ACTION</p>
+          <p class="task-detail-next" id="task-detail-next"></p>
         </div>
 
         <div class="task-detail-section" data-detail-section="steps">
-          <p class="task-detail-label">PLAN D’ACTION</p>
+          <p class="task-detail-label">ÉTAPES</p>
           <ol class="task-step-list" id="task-detail-steps"></ol>
         </div>
 
-        <div class="task-detail-section" data-detail-section="subtasks">
-          <p class="task-detail-label">SOUS-TÂCHES</p>
-          <ul class="task-subtask-list" id="task-detail-subtasks"></ul>
-        </div>
-
-        <div class="task-detail-section" data-detail-section="dependencies">
-          <p class="task-detail-label">DÉPENDANCES</p>
-          <ul class="task-dependency-list" id="task-detail-dependencies"></ul>
+        <div class="task-detail-section" data-detail-section="waiting">
+          <p class="task-detail-label">À ATTENDRE</p>
+          <p class="task-detail-copy" id="task-detail-waiting"></p>
         </div>
 
         <div class="task-detail-section task-done-section" data-detail-section="done">
