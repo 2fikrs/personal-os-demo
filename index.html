@@ -834,56 +834,18 @@ body.task-sheet-open{
     "top-demo":{
       context:"À FAIRE · AUJOURD’HUI",
       title:"Un résultat fictif à traiter.",
-      summary:"Transformer une priorité générale en un résultat concret, sans multiplier les microtâches dans le Daily Brief.",
-      objective:"Produire un livrable simple et vérifiable qui ferme réellement la boucle.",
-      whyToday:"Cette priorité est volontairement placée dans le Top du jour pour tester la profondeur progressive de PERSONAL OS.",
+      summary:"Le résultat compte plus que la liste de microtâches.",
       steps:[
-        "Clarifier le résultat final attendu avant de commencer.",
-        "Rassembler uniquement les informations nécessaires à l’exécution.",
-        "Réaliser le bloc principal sans ouvrir de nouveau chantier.",
-        "Vérifier le résultat puis fermer la boucle."
-      ],
-      subtasks:[
-        "Identifier le prochain geste concret.",
-        "Écarter les éléments qui peuvent attendre.",
-        "Faire une vérification finale de 5 minutes."
-      ],
-      dependencies:[],
-      doneWhen:"Le résultat attendu existe, a été vérifié et ne nécessite plus d’action aujourd’hui."
+        "Clarifier le résultat final attendu.",
+        "Faire le bloc principal sans ouvrir de nouveau chantier.",
+        "Vérifier puis fermer la boucle."
+      ]
     },
     "email-demo":{
       context:"À FAIRE · DEMAIN",
       title:"Un message fictif à traiter.",
-      summary:"Préparer une réponse courte qui permet au destinataire de comprendre immédiatement la décision ou la prochaine étape.",
-      objective:"Répondre au message sans créer une nouvelle boucle inutile.",
-      whyToday:"Le message est visible maintenant uniquement pour préparer demain, pas pour créer une urgence artificielle.",
-      steps:[
-        "Relire la demande et isoler la décision attendue.",
-        "Vérifier les éléments indispensables avant de répondre.",
-        "Rédiger une réponse courte avec une prochaine étape explicite.",
-        "Relire une fois puis envoyer au moment prévu."
-      ],
-      subtasks:[
-        "Confirmer qu’aucune pièce utile ne manque.",
-        "Supprimer les détails qui n’aident pas la décision."
-      ],
-      dependencies:["Une information fictive doit être confirmée avant l’envoi."],
-      doneWhen:"La réponse est prête, claire et peut être envoyée sans nouvelle recherche."
-    },
-    "focus-demo":{
-      context:"FOCUS ACTUEL",
-      title:"Prochaine action — exemple.",
-      summary:"La fiche détaille uniquement ce qui aide à démarrer, sans transformer PERSONAL OS en gestionnaire de projet.",
-      objective:"Passer du choix de priorité au premier geste exécutable.",
-      whyToday:"FOCUS ACTUEL doit réduire la friction de démarrage et non ajouter une nouvelle liste.",
-      steps:[
-        "Commencer par l’étape qui débloque le reste.",
-        "Rester sur ce sujet jusqu’à obtenir un progrès visible.",
-        "Revenir au cockpit uniquement lorsqu’une décision est nécessaire."
-      ],
-      subtasks:[],
-      dependencies:[],
-      doneWhen:"La prochaine action est terminée ou une nouvelle décision devient nécessaire."
+      summary:"Une réponse courte suffit.",
+      nextAction:"Relire la demande, décider ce qui est attendu et préparer une réponse claire."
     }
   };
 
@@ -1086,19 +1048,15 @@ body.task-sheet-open{
     setText("#task-sheet-context",detail.context);
     setText("#task-sheet-title",detail.title);
     setText("#task-sheet-summary",detail.summary);
-    setText("#task-detail-objective",detail.objective);
-    setText("#task-detail-why",detail.whyToday);
+    setText("#task-detail-next",detail.nextAction);
+    setText("#task-detail-waiting",detail.waitingFor);
     setText("#task-detail-done",detail.doneWhen);
 
     renderList("#task-detail-steps",detail.steps);
-    renderList("#task-detail-subtasks",detail.subtasks);
-    renderList("#task-detail-dependencies",detail.dependencies);
 
-    toggleDetailSection("objective",Boolean(detail.objective));
-    toggleDetailSection("why",Boolean(detail.whyToday));
+    toggleDetailSection("next",Boolean(detail.nextAction));
     toggleDetailSection("steps",Boolean(detail.steps?.length));
-    toggleDetailSection("subtasks",Boolean(detail.subtasks?.length));
-    toggleDetailSection("dependencies",Boolean(detail.dependencies?.length));
+    toggleDetailSection("waiting",Boolean(detail.waitingFor));
     toggleDetailSection("done",Boolean(detail.doneWhen));
 
     sheet.dataset.tone = card.dataset.taskTone || "work";
